@@ -10,6 +10,7 @@ import time
 SERVICOS = [
     ("catalogo.app:app", 8001, "Catálogo"),
     ("pagamentos.app:app", 8003, "Pagamentos"),
+    ("usuarios.app:app", 8004, "Usuários"),
     ("pedidos.app:app", 8002, "Pedidos"),
     ("gateway.app:app", 8000, "API Gateway"),
 ]

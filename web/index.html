@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pocket</title>
+<style>
+  :root {
+    --navy: #0b1f4b;
+    --cobalt: #1f4fd8;
+    --gold: #c8a24a;
+    --gold-deep: #a8842f;
+    --ink: #000;
+    --muted: #55607a;
+    --line: #dde2ea;
+    --sky: #e9effc;
+    --paper: #fff;
+    --bg: #f4f6fa;
+    --danger: #b3261e;
+    --ok: #1b6b3a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  button, input, select { font: inherit; }
+  :focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; }
+
+  /* cabeçalho */
+  header { background: var(--navy); border-bottom: 3px solid var(--gold); }
+  .topo { max-width: 1120px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 32px; min-height: 64px; flex-wrap: wrap; }
+  .marca { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; margin: 0; }
+  .marca span { color: var(--gold); }
+  nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+  .sessao { display: flex; align-items: center; gap: 10px; color: #cdd7ee; font-size: 15px; }
+  .sessao .nome { color: #fff; font-weight: 600; }
+  .tag { display: inline-block; font-size: 13px; font-weight: 700; padding: 0 9px; border-radius: 10px; background: var(--gold); color: var(--ink); }
+  .tag.cliente { background: transparent; color: #cdd7ee; border: 1px solid #3b4f80; font-weight: 600; }
+  .btn.sair { background: none; border-color: #3b4f80; color: #fff; }
+  .btn.sair:hover { background: #12306f; }
+  .entrada { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; max-width: 780px; }
+  .entrada .cartao-form { background: var(--paper); border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: 4px; padding: 22px; }
+  .entrada .cartao-form.nova { border-top-color: var(--gold); }
+  .entrada h2 { font-size: 20px; margin: 0 0 14px; }
+  .aviso-login { margin: 0 0 14px; color: var(--muted); }
+  nav button { background: none; border: 0; color: #cdd7ee; padding: 21px 14px 18px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  nav button:hover { color: #fff; }
+  nav button.ativo { color: #fff; border-bottom-color: var(--gold); font-weight: 600; }
+  .contador { display: inline-block; min-width: 22px; text-align: center; background: var(--gold); color: var(--ink); font-size: 13px; font-weight: 700; border-radius: 11px; padding: 0 6px; margin-left: 6px; }
+  .contador.zero { background: transparent; color: #8fa0c9; border: 1px solid #3b4f80; }
+
+  main { max-width: 1120px; margin: 0 auto; padding: 32px 24px 56px; }
+  h1 { font-size: 28px; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 24px; max-width: 60ch; }
+  .tela { display: none; } .tela.ativa { display: block; }
+
+  /* avisos */
+  .msg { display: none; margin: 0 0 20px; padding: 12px 16px; border-left: 4px solid; background: var(--paper); white-space: pre-line; border-radius: 2px; }
+  .msg.ok { display: block; border-color: var(--ok); }
+  .msg.aviso { display: block; border-color: var(--gold); }
+  .msg.erro { display: block; border-color: var(--danger); }
+
+  /* botões e campos */
+  .btn { border: 1px solid var(--navy); background: var(--navy); color: #fff; padding: 9px 18px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+  .btn:hover { background: #12306f; }
+  .btn.ouro { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .btn.ouro:hover { background: #d4b05a; }
+  .btn.claro { background: var(--paper); color: var(--navy); }
+  .btn.claro:hover { background: var(--sky); }
+  .btn.risco { background: var(--paper); border-color: var(--danger); color: var(--danger); }
+  .btn.risco:hover { background: #fbeceb; }
+  .btn.p { padding: 5px 12px; font-size: 14px; }
+  .btn.cheio { width: 100%; padding: 13px 18px; font-size: 17px; }
+  input, select { width: 100%; border: 1px solid #b9c2d3; border-radius: 4px; padding: 9px 11px; background: var(--paper); color: var(--ink); }
+  input:focus, select:focus { border-color: var(--cobalt); }
+  label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .campo { margin-bottom: 14px; }
+  .dica { color: var(--muted); font-size: 14px; margin: 4px 0 0; }
+
+  /* busca */
+  .busca { display: flex; gap: 8px; max-width: 520px; margin-bottom: 28px; }
+  .busca input { flex: 1; }
+
+  /* vitrine */
+  .vitrine { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 24px; }
+  .produto { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; }
+  .produto .foto { height: 128px; background: var(--sky); display: flex; align-items: center; justify-content: center; font-size: 68px; font-weight: 800; color: var(--navy); }
+  .produto .foto.digital { background: var(--navy); color: var(--gold); }
+  .produto .corpo { padding: 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .produto h3 { font-size: 18px; margin: 0; line-height: 1.25; }
+  .produto .cat { color: var(--muted); font-size: 14px; }
+  .produto .estoque { font-size: 14px; color: var(--muted); }
+  .produto .estoque.baixo { color: var(--danger); font-weight: 600; }
+  .etiqueta { align-self: flex-start; background: var(--gold); color: var(--ink); font-weight: 800; font-size: 19px; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; padding: 3px 14px 3px 22px; margin: 10px 0 12px; clip-path: polygon(11px 0, 100% 0, 100% 100%, 11px 100%, 0 50%); }
+  .compra { margin-top: auto; display: flex; gap: 8px; }
+  .compra input { width: 64px; text-align: center; }
+  .compra .btn { flex: 1; }
+
+  /* tabelas */
+  .quadro { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 14px; color: var(--muted); font-weight: 600; padding: 12px 16px; border-bottom: 2px solid var(--navy); white-space: nowrap; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.vazio { text-align: center; color: var(--muted); padding: 40px 16px; }
+  .acoes { white-space: nowrap; text-align: right; }
+  .acoes .btn + .btn { margin-left: 6px; }
+
+  .status { display: inline-block; font-size: 14px; font-weight: 600; padding: 1px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+  .status.pago, .status.entregue { border-color: var(--ok); color: var(--ok); background: #eef7f1; }
+  .status.enviado { border-color: var(--cobalt); color: var(--cobalt); background: var(--sky); }
+  .status.cancelado, .status.pagamento_recusado, .status.falhou { border-color: var(--danger); color: var(--danger); background: #fbeceb; }
+
+  /* carrinho */
+  .carrinho { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; }
+  .resumo { background: var(--paper); border: 1px solid var(--line); border-top: 4px solid var(--gold); border-radius: 4px; padding: 20px; position: sticky; top: 20px; }
+  .resumo h2 { font-size: 20px; margin: 0 0 14px; }
+  #total-carrinho { margin: 0 0 18px; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
+  #total-carrinho div { display: flex; justify-content: space-between; padding: 2px 0; font-variant-numeric: tabular-nums; }
+  #total-carrinho .final { font-size: 22px; font-weight: 800; padding-top: 8px; }
+
+  /* gerenciar produtos */
+  .form-produto { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 20px; margin-bottom: 24px; }
+  .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0 16px; }
+  .linha-botoes { display: flex; gap: 8px; margin-top: 4px; }
+
+  footer { max-width: 1120px; margin: 0 auto; padding: 0 24px 32px; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 820px) {
+    .carrinho { grid-template-columns: 1fr; }
+    .resumo { position: static; }
+    .topo { gap: 0; padding-bottom: 8px; }
+    .sessao { margin-left: auto; }
+    nav { margin-left: 0; width: 100%; order: 3; }
+    nav button { padding: 12px 12px 10px; }
+    main { padding: 24px 16px 40px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .btn { transition: background-color .15s; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="topo">
+    <p class="marca"><span>Pocket</span></p>
+    <nav aria-label="Seções da loja">
+      <button data-tela="loja" class="ativo">Loja</button>
+      <button data-tela="carrinho">Carrinho<span class="contador zero" id="badge">0</span></button>
+      <button data-tela="pedidos" id="nav-pedidos" hidden>Pedidos</button>
+      <button data-tela="produtos" id="nav-produtos" hidden>Gerenciar produtos</button>
+      <button data-tela="usuarios" id="nav-usuarios" hidden>Usuários</button>
+    </nav>
+    <div class="sessao" id="sessao"></div>
+  </div>
+</header>
+
+<main>
+  <div id="msg" class="msg" role="status"></div>
+
+  <section id="tela-loja" class="tela ativa" aria-labelledby="h-loja">
+    <h1 id="h-loja">Produtos</h1>
+    <p class="sub">Escolha o que quiser e adicione ao carrinho. O frete é calculado pelo peso.</p>
+    <div class="busca">
+      <input id="busca" type="search" placeholder="Buscar produto pelo nome" aria-label="Buscar produto pelo nome">
+      <button class="btn" id="btn-buscar">Buscar</button>
+    </div>
+    <div class="vitrine" id="lista-loja"></div>
+  </section>
+
+  <section id="tela-entrar" class="tela" aria-labelledby="h-entrar">
+    <h1 id="h-entrar">Entrar</h1>
+    <p class="sub">Entre com a sua conta para comprar e acompanhar os pedidos, ou crie uma conta nova.</p>
+    <div class="entrada">
+      <form class="cartao-form" id="form-login">
+        <h2>Já tenho conta</h2>
+        <div class="campo"><label for="l-email">E-mail</label><input id="l-email" type="email" autocomplete="username" required></div>
+        <div class="campo"><label for="l-senha">Senha</label><input id="l-senha" type="password" autocomplete="current-password" required></div>
+        <button class="btn cheio" id="btn-login" type="submit">Entrar</button>
+      </form>
+      <form class="cartao-form nova" id="form-cadastro">
+        <h2>Criar conta de cliente</h2>
+        <div class="campo"><label for="c-nome">Nome</label><input id="c-nome" autocomplete="name" required></div>
+        <div class="campo"><label for="c-email">E-mail</label><input id="c-email" type="email" autocomplete="email" required></div>
+        <div class="campo"><label for="c-senha">Senha, com pelo menos 6 caracteres</label><input id="c-senha" type="password" autocomplete="new-password" minlength="6" required></div>
+        <button class="btn ouro cheio" id="btn-cadastro" type="submit">Criar conta</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="tela-usuarios" class="tela" aria-labelledby="h-usuarios">
+    <h1 id="h-usuarios">Usuários</h1>
+    <p class="sub">Área do administrador: veja as contas e defina quem é administrador ou cliente.</p>
+    <table>
+      <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th></th></tr></thead>
+      <tbody id="lista-usuarios"></tbody>
+    </table>
+  </section>
+
+  <section id="tela-carrinho" class="tela" aria-labelledby="h-carrinho">
+    <h1 id="h-carrinho">Carrinho</h1>
+    <p class="sub">Confira os itens e escolha como pagar.</p>
+    <div class="carrinho">
+      <div class="quadro">
+        <table>
+          <thead><tr><th>Produto</th><th class="num">Qtd</th><th class="num">Preço</th><th class="num">Subtotal</th><th></th></tr></thead>
+          <tbody id="lista-carrinho"></tbody>
+        </table>
+      </div>
+      <aside class="resumo">
+        <h2>Resumo do pedido</h2>
+        <div id="total-carrinho"></div>
+        <p class="aviso-login" id="comprando-como"></p>
+        <div class="campo"><label for="metodo">Forma de pagamento</label>
+          <select id="metodo"><option value="pix">Pix, com 5% de desconto</option><option value="cartao">Cartão</option><option value="boleto">Boleto</option></select></div>
+        <div class="campo" id="campo-parcelas" hidden><label for="parcelas">Parcelas, de 1 a 12</label><input id="parcelas" type="number" min="1" max="12" value="1"></div>
+        <div class="campo" id="campo-cartao" hidden><label for="cartao">Número do cartão</label><input id="cartao" inputmode="numeric" placeholder="4111111111111111" autocomplete="off"></div>
+        <button class="btn ouro cheio" id="btn-finalizar">Finalizar compra</button>
+        <p class="dica">Pagamento simulado. Cartão terminado em 0000 é recusado, para testar.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="tela-pedidos" class="tela" aria-labelledby="h-pedidos">
+    <h1 id="h-pedidos">Pedidos</h1>
+    <p class="sub" id="sub-pedidos">Acompanhe os seus pedidos.</p>
+    <p><button class="btn claro" id="btn-atualizar-pedidos">Atualizar lista</button></p>
+    <div class="quadro">
+      <table>
+        <thead><tr><th>Nº</th><th>Cliente</th><th>Status</th><th>Pagamento</th><th class="num">Total</th><th class="num">Pago</th><th>Itens</th><th></th></tr></thead>
+        <tbody id="lista-pedidos"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tela-produtos" class="tela" aria-labelledby="h-produtos">
+    <h1 id="h-produtos">Gerenciar produtos</h1>
+    <p class="sub">Área do administrador: cadastre, edite e remova os produtos do catálogo.</p>
+    <div class="form-produto">
+      <div class="grade">
+        <div class="campo"><label for="p-nome">Nome</label><input id="p-nome"></div>
+        <div class="campo"><label for="p-preco">Preço, em reais</label><input id="p-preco" inputmode="decimal"></div>
+        <div class="campo"><label for="p-estoque">Estoque</label><input id="p-estoque" type="number" min="0" value="0"></div>
+        <div class="campo"><label for="p-categoria">Categoria</label><input id="p-categoria" value="Geral"></div>
+        <div class="campo"><label for="p-peso">Peso, em kg</label><input id="p-peso" inputmode="decimal" value="1"></div>
+        <div class="campo"><label for="p-tipo">Tipo</label><select id="p-tipo"><option value="fisico">Físico</option><option value="digital">Digital</option></select></div>
+      </div>
+      <div class="linha-botoes">
+        <button class="btn" id="btn-salvar-produto">Criar produto</button>
+        <button class="btn claro" id="btn-limpar-produto">Limpar campos</button>
+      </div>
+    </div>
+    <div class="quadro">
+      <table>
+        <thead><tr><th>Produto</th><th>Categoria</th><th>Tipo</th><th class="num">Preço</th><th class="num">Estoque</th><th></th></tr></thead>
+        <tbody id="lista-produtos"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer>Pocket: projeto acadêmico de e-commerce com microsserviços.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const brl = v => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const num = t => parseFloat(String(t).replace(',', '.'));
+
+// Tudo passa pelo API Gateway: /api/<servico>/<caminho>
+async function api(servico, caminho, metodo = 'GET', corpo = null, params = null) {
+  let url = `/api/${servico}${caminho}`;
+  if (params) {
+    const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v));
+    if ([...q].length) url += '?' + q;
+  }
+  let resp;
+  try {
+    const cab = { 'Content-Type': 'application/json' };
+    if (sessao) cab['Authorization'] = 'Bearer ' + sessao.token;
+    resp = await fetch(url, { method: metodo, headers: cab, body: corpo ? JSON.stringify(corpo) : undefined });
+  } catch (e) {
+    throw new Error('Não foi possível falar com o servidor. Confira se os serviços estão rodando.');
+  }
+  const dados = await resp.json().catch(() => ({}));
+  if (!resp.ok) {
+    if (resp.status === 401 && sessao && !(servico === 'usuarios' && caminho === '/login')) {
+      sair(); mostrar('entrar');
+      throw new Error('Sua sessão expirou. Entre de novo.');
+    }
+    const d = dados.detail;
+    throw new Error(typeof d === 'string' ? d : 'Algum campo está inválido. Confira os dados e tente de novo.');
+  }
+  return dados;
+}
+
+let msgTimer;
+function mensagem(texto, tipo = 'ok') {
+  const el = $('msg');
+  el.className = 'msg ' + tipo;
+  el.textContent = texto;
+  clearTimeout(msgTimer);
+  if (tipo === 'ok') msgTimer = setTimeout(() => { el.className = 'msg'; }, 8000);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+const seguro = fn => async (...a) => { try { await fn(...a); } catch (e) { mensagem(e.message, 'erro'); } };
+
+// ---------- sessão (login) ----------
+let sessao = null;          // { token, usuario } quando há alguém logado
+try { sessao = JSON.parse(sessionStorage.getItem('pocket-sessao')); } catch (e) { sessao = null; }
+const ehAdmin = () => !!sessao && sessao.usuario.perfil === 'administrador';
+const rotuloPerfil = p => (p === 'administrador' ? 'Administrador' : 'Cliente');
+
+function guardarSessao(dados) {
+  sessao = dados;
+  try { sessionStorage.setItem('pocket-sessao', JSON.stringify(dados)); } catch (e) { /* sem armazenamento: vale só nesta aba */ }
+  desenharSessao();
+}
+function sair() {
+  sessao = null;
+  try { sessionStorage.removeItem('pocket-sessao'); } catch (e) { /* ignora */ }
+  desenharSessao();
+}
+function desenharSessao() {
+  const box = $('sessao');
+  if (sessao) {
+    const u = sessao.usuario;
+    box.innerHTML = `<span class="nome">${esc(u.nome)}</span><span class="tag ${esc(u.perfil === 'administrador' ? '' : 'cliente')}">${rotuloPerfil(u.perfil)}</span><button class="btn sair p" id="btn-sair">Sair</button>`;
+    $('btn-sair').addEventListener('click', () => { sair(); mostrar('loja'); mensagem('Você saiu da conta.'); });
+  } else {
+    box.innerHTML = '<button class="btn ouro p" id="btn-ir-entrar">Entrar</button>';
+    $('btn-ir-entrar').addEventListener('click', () => mostrar('entrar'));
+  }
+  $('nav-pedidos').hidden = !sessao;
+  $('nav-produtos').hidden = !ehAdmin();
+  $('nav-usuarios').hidden = !ehAdmin();
+  $('comprando-como').textContent = sessao ? `Comprando como ${sessao.usuario.nome}.` : 'Entre na sua conta para finalizar a compra.';
+}
+
+// ---------- estado ----------
+let produtos = {};          // id -> produto (última lista carregada)
+const carrinho = {};        // id -> { produto, qtd }
+let editandoId = null;
+
+function atualizarBadge() {
+  const n = Object.values(carrinho).reduce((s, i) => s + i.qtd, 0);
+  $('badge').textContent = n;
+  $('badge').classList.toggle('zero', n === 0);
+}
+
+// ---------- navegação ----------
+function mostrar(tela) {
+  if (tela === 'pedidos' && !sessao) { tela = 'entrar'; }
+  if ((tela === 'produtos' || tela === 'usuarios') && !ehAdmin()) { tela = sessao ? 'loja' : 'entrar'; }
+  $('msg').className = 'msg';
+  document.querySelectorAll('.tela').forEach(s => s.classList.toggle('ativa', s.id === 'tela-' + tela));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('ativo', b.dataset.tela === tela));
+  ({ loja: carregarLoja, entrar: () => {}, carrinho: desenharCarrinho, pedidos: carregarPedidos, produtos: carregarProdutos, usuarios: carregarUsuarios })[tela]();
+}
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => mostrar(b.dataset.tela)));
+
+// ---------- usuários (administrador) ----------
+const carregarUsuarios = seguro(async () => {
+  const lista = await api('usuarios', '/usuarios');
+  $('lista-usuarios').innerHTML = lista.map(u => {
+    const admin = u.perfil === 'administrador';
+    const eu = sessao && sessao.usuario.id === u.id;
+    return `<tr><td>${esc(u.nome)}${eu ? ' (você)' : ''}</td><td>${esc(u.email)}</td>
+      <td><span class="tag ${admin ? '' : 'cliente'}">${rotuloPerfil(u.perfil)}</span></td>
+      <td>${admin ? `<button class="btn claro p" data-perfil="${u.id}" data-novo="cliente">Tornar cliente</button>`
+                  : `<button class="btn p" data-perfil="${u.id}" data-novo="administrador">Tornar administrador</button>`}</td></tr>`;
+  }).join('');
+  document.querySelectorAll('[data-perfil]').forEach(b => b.addEventListener('click', seguro(async () => {
+    const quer = b.dataset.novo === 'administrador' ? 'tornar administrador' : 'tornar cliente';
+    if (!confirm(`Confirma: ${quer}?`)) return;
+    await api('usuarios', `/usuarios/${b.dataset.perfil}/perfil`, 'PUT', { perfil: b.dataset.novo });
+    if (sessao && String(sessao.usuario.id) === b.dataset.perfil) {   // mudou o próprio perfil
+      sessao.usuario = await api('usuarios', '/eu'); guardarSessao(sessao);
+      if (!ehAdmin()) { mostrar('loja'); return mensagem('Você agora é cliente.'); }
+    }
+    mensagem('Perfil atualizado.'); carregarUsuarios();
+  })));
+});
+
+// ---------- entrar e cadastrar ----------
+$('form-login').addEventListener('submit', seguro(async e => {
+  e.preventDefault();
+  const dados = await api('usuarios', '/login', 'POST', { email: $('l-email').value.trim(), senha: $('l-senha').value });
+  guardarSessao(dados);
+  $('l-senha').value = '';
+  mostrar('loja');
+  mensagem(`Bem-vindo, ${dados.usuario.nome}.`);
+}));
+$('form-cadastro').addEventListener('submit', seguro(async e => {
+  e.preventDefault();
+  const dados = await api('usuarios', '/cadastro', 'POST', { nome: $('c-nome').value.trim(), email: $('c-email').value.trim(), senha: $('c-senha').value });
+  guardarSessao(dados);
+  $('c-senha').value = '';
+  mostrar('loja');
+  mensagem(`Conta criada. Bem-vindo, ${dados.usuario.nome}.`);
+}));
+
+// ---------- loja ----------
+const carregarLoja = seguro(async () => {
+  const lista = await api('catalogo', '/produtos', 'GET', null, { busca: $('busca').value.trim() });
+  produtos = Object.fromEntries(lista.map(p => [p.id, p]));
+  $('lista-loja').innerHTML = lista.length ? lista.map(p => {
+    const digital = p.tipo === 'digital';
+    const baixo = !digital && p.estoque <= 5;
+    const estoque = digital ? 'Entrega digital' : (p.estoque === 0 ? 'Sem estoque' : `${p.estoque} em estoque`);
+    return `<article class="produto">
+      <div class="foto ${digital ? 'digital' : ''}" aria-hidden="true">${esc(p.nome.trim().charAt(0).toUpperCase())}</div>
+      <div class="corpo">
+        <h3>${esc(p.nome)}</h3>
+        <span class="cat">${esc(p.categoria)}</span>
+        <span class="estoque ${baixo ? 'baixo' : ''}">${estoque}</span>
+        <span class="etiqueta">${brl(p.preco)}</span>
+        <div class="compra">
+          <input type="number" min="1" value="1" id="q-${p.id}" aria-label="Quantidade de ${esc(p.nome)}">
+          <button class="btn" data-add="${p.id}">Adicionar</button>
+        </div>
+      </div></article>`;
+  }).join('') : '<p class="sub">Nenhum produto encontrado. Tente outro nome.</p>';
+});
+$('btn-buscar').addEventListener('click', carregarLoja);
+$('busca').addEventListener('keydown', e => { if (e.key === 'Enter') carregarLoja(); });
+$('lista-loja').addEventListener('click', e => {
+  const id = e.target.dataset.add;
+  if (!id) return;
+  const qtd = parseInt($('q-' + id).value, 10);
+  if (!(qtd > 0)) return mensagem('A quantidade precisa ser maior que zero.', 'erro');
+  const p = produtos[id];
+  carrinho[id] = { produto: p, qtd: (carrinho[id]?.qtd || 0) + qtd };
+  atualizarBadge();
+  mensagem(`${qtd}x ${p.nome} adicionado ao carrinho.`);
+});
+
+// ---------- carrinho ----------
+function desenharCarrinho() {
+  const itens = Object.values(carrinho);
+  let sub = 0, frete = 0;
+  $('lista-carrinho').innerHTML = itens.length ? itens.map(({ produto: p, qtd }) => {
+    sub += p.preco * qtd; frete += p.frete_unitario * qtd;
+    return `<tr><td>${esc(p.nome)}</td><td class="num">${qtd}</td><td class="num">${brl(p.preco)}</td>
+      <td class="num">${brl(p.preco * qtd)}</td><td class="acoes"><button class="btn risco p" data-rem="${p.id}">Remover</button></td></tr>`;
+  }).join('') : '<tr><td class="vazio" colspan="5">Seu carrinho está vazio. Escolha produtos na loja.</td></tr>';
+  $('total-carrinho').innerHTML = `<div><span>Subtotal</span><span>${brl(sub)}</span></div>
+    <div><span>Frete</span><span>${brl(frete)}</span></div>
+    <div class="final"><span>Total</span><span>${brl(sub + frete)}</span></div>`;
+}
+$('lista-carrinho').addEventListener('click', e => {
+  const id = e.target.dataset.rem;
+  if (id) { delete carrinho[id]; atualizarBadge(); desenharCarrinho(); }
+});
+$('metodo').addEventListener('change', () => {
+  const cartao = $('metodo').value === 'cartao';
+  $('campo-parcelas').hidden = !cartao;
+  $('campo-cartao').hidden = !cartao;
+});
+$('btn-finalizar').addEventListener('click', seguro(async () => {
+  if (!sessao) { mostrar('entrar'); return mensagem('Entre na sua conta para finalizar a compra. O carrinho fica guardado.', 'aviso'); }
+  const itens = Object.entries(carrinho).map(([id, i]) => ({ produto_id: Number(id), quantidade: i.qtd }));
+  if (!itens.length) return mensagem('Adicione ao menos um produto antes de finalizar.', 'aviso');
+  const ped = await api('pedidos', '/pedidos', 'POST', {
+    itens,
+    metodo_pagamento: $('metodo').value,
+    parcelas: parseInt($('parcelas').value, 10) || 1,
+    numero_cartao: $('cartao').value.trim(),
+  });
+  const texto = `Pedido #${ped.id}: ${ped.status}\nTotal: ${brl(ped.total)}\n${ped.mensagem_pagamento}`;
+  if (ped.status === 'pago') {
+    Object.keys(carrinho).forEach(k => delete carrinho[k]);
+    atualizarBadge();
+    mensagem(texto, 'ok');
+  } else {
+    mensagem(texto, 'aviso');
+  }
+  desenharCarrinho();
+}));
+
+// ---------- pedidos ----------
+const carregarPedidos = seguro(async () => {
+  $('sub-pedidos').textContent = ehAdmin()
+    ? 'Você vê os pedidos de todos os clientes. Avance o status ou cancele um pedido pago.'
+    : 'Acompanhe os seus pedidos. Você pode cancelar um pedido que ainda está pago.';
+  const lista = await api('pedidos', '/pedidos');
+  $('lista-pedidos').innerHTML = lista.length ? lista.map(p => {
+    const itens = p.itens.map(i => `${i.quantidade}x ${esc(i.nome)}`).join(', ');
+    const avancar = ehAdmin() && ['pago', 'enviado'].includes(p.status) ? `<button class="btn claro p" data-avancar="${p.id}">Avançar</button>` : '';
+    const cancelar = p.status === 'pago' ? `<button class="btn risco p" data-cancelar="${p.id}">Cancelar</button>` : '';
+    return `<tr><td>${p.id}</td><td>${esc(p.cliente)}</td><td><span class="status ${esc(p.status)}">${esc(p.status)}</span></td>
+      <td>${esc(p.metodo_pagamento)}</td><td class="num">${brl(p.total)}</td><td class="num">${brl(p.total_pago)}</td>
+      <td>${itens}</td><td class="acoes">${avancar}${cancelar}</td></tr>`;
+  }).join('') : '<tr><td class="vazio" colspan="8">Nenhum pedido ainda. Finalize uma compra para ver o pedido aqui.</td></tr>';
+});
+$('btn-atualizar-pedidos').addEventListener('click', carregarPedidos);
+$('lista-pedidos').addEventListener('click', seguro(async e => {
+  const { avancar, cancelar } = e.target.dataset;
+  if (avancar) await api('pedidos', `/pedidos/${avancar}/avancar`, 'POST');
+  else if (cancelar) {
+    if (!confirm('Cancelar este pedido? O pagamento será estornado e o estoque devolvido.')) return;
+    await api('pedidos', `/pedidos/${cancelar}/cancelar`, 'POST');
+    mensagem(`Pedido #${cancelar} cancelado e estornado.`);
+  } else return;
+  await carregarPedidos();
+}));
+
+// ---------- produtos ----------
+const carregarProdutos = seguro(async () => {
+  const lista = await api('catalogo', '/produtos');
+  produtos = Object.fromEntries(lista.map(p => [p.id, p]));
+  $('lista-produtos').innerHTML = lista.map(p => `
+    <tr><td>${esc(p.nome)}</td><td>${esc(p.categoria)}</td><td>${esc(p.tipo)}</td>
+    <td class="num">${brl(p.preco)}</td><td class="num">${p.tipo === 'digital' ? '∞' : p.estoque}</td>
+    <td class="acoes"><button class="btn claro p" data-editar="${p.id}">Editar</button>
+        <button class="btn risco p" data-remover="${p.id}">Remover</button></td></tr>`).join('');
+});
+function limparFormProduto() {
+  editandoId = null;
+  $('p-nome').value = ''; $('p-preco').value = ''; $('p-estoque').value = 0;
+  $('p-categoria').value = 'Geral'; $('p-peso').value = 1; $('p-tipo').value = 'fisico';
+  $('btn-salvar-produto').textContent = 'Criar produto';
+}
+$('btn-limpar-produto').addEventListener('click', limparFormProduto);
+$('lista-produtos').addEventListener('click', seguro(async e => {
+  const { editar, remover } = e.target.dataset;
+  if (editar) {
+    const p = produtos[editar];
+    editandoId = p.id;
+    $('p-nome').value = p.nome; $('p-preco').value = p.preco; $('p-estoque').value = p.estoque;
+    $('p-categoria').value = p.categoria; $('p-peso').value = p.peso_kg || 1; $('p-tipo').value = p.tipo;
+    $('btn-salvar-produto').textContent = 'Salvar edição';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else if (remover) {
+    if (!confirm('Remover este produto do catálogo?')) return;
+    await api('catalogo', `/produtos/${remover}`, 'DELETE');
+    delete carrinho[remover]; atualizarBadge();
+    await carregarProdutos();
+  }
+}));
+$('btn-salvar-produto').addEventListener('click', seguro(async () => {
+  const corpo = {
+    nome: $('p-nome').value.trim(),
+    preco: num($('p-preco').value),
+    estoque: parseInt($('p-estoque').value, 10) || 0,
+    categoria: $('p-categoria').value.trim() || 'Geral',
+    tipo: $('p-tipo').value,
+    peso_kg: num($('p-peso').value || '1'),
+  };
+  if (!corpo.nome) return mensagem('Informe o nome do produto.', 'erro');
+  if (Number.isNaN(corpo.preco) || Number.isNaN(corpo.peso_kg)) return mensagem('Preço e peso precisam ser números.', 'erro');
+  if (editandoId) await api('catalogo', `/produtos/${editandoId}`, 'PUT', corpo);
+  else await api('catalogo', '/produtos', 'POST', corpo);
+  mensagem(editandoId ? 'Produto atualizado.' : 'Produto criado.');
+  limparFormProduto();
+  await carregarProdutos();
+}));
+
+// ao abrir: confere se a sessão guardada ainda vale
+(async () => {
+  desenharSessao();
+  if (sessao) {
+    try { sessao.usuario = await api('usuarios', '/eu'); guardarSessao(sessao); }
+    catch (e) { sair(); }
+  }
+  carregarLoja();
+})();
+</script>
+</body>
+</html>

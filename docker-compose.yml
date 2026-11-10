@@ -1,7 +1,7 @@
 services:
   catalogo:
     build: .
-    image: miniloja:latest
+    image: pocket:latest
     command: uvicorn catalogo.app:app --host 0.0.0.0 --port 8001
     ports:
       - "8001:8001"
@@ -10,16 +10,25 @@ services:
 
   pagamentos:
     build: .
-    image: miniloja:latest
+    image: pocket:latest
     command: uvicorn pagamentos.app:app --host 0.0.0.0 --port 8003
     ports:
       - "8003:8003"
     volumes:
       - ./dados:/app/dados
 
+  usuarios:
+    build: .
+    image: pocket:latest
+    command: uvicorn usuarios.app:app --host 0.0.0.0 --port 8004
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./dados:/app/dados
+
   pedidos:
     build: .
-    image: miniloja:latest
+    image: pocket:latest
     command: uvicorn pedidos.app:app --host 0.0.0.0 --port 8002
     environment:
       URL_CATALOGO: http://catalogo:8001
@@ -34,15 +43,17 @@ services:
 
   gateway:
     build: .
-    image: miniloja:latest
+    image: pocket:latest
     command: uvicorn gateway.app:app --host 0.0.0.0 --port 8000
     environment:
       URL_CATALOGO: http://catalogo:8001
       URL_PEDIDOS: http://pedidos:8002
       URL_PAGAMENTOS: http://pagamentos:8003
+      URL_USUARIOS: http://usuarios:8004
     ports:
       - "8000:8000"
     depends_on:
+      - usuarios
       - catalogo
       - pedidos
       - pagamentos

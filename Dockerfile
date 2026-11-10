@@ -9,6 +9,7 @@ COPY comum ./comum
 COPY catalogo ./catalogo
 COPY pedidos ./pedidos
 COPY pagamentos ./pagamentos
+COPY usuarios ./usuarios
 COPY gateway ./gateway
 COPY web ./web
 
