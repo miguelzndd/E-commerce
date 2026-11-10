@@ -28,7 +28,6 @@ Rode sempre de dentro da pasta `ecommerce/`.
 
 | Perfil        | E-mail             | Senha      |
 |---------------|--------------------|------------|
-| Administrador | mats@ufal.com      | TJAGSMVTAFGJP |
 | Cliente       | crie na tela *Entrar* (todo cadastro novo é cliente) | |
 
 - **Visitante** (sem login): vê a loja e monta o carrinho; precisa entrar para finalizar a compra.
